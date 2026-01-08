@@ -88,6 +88,25 @@ python scripts/prepare_seed_data.py \
 
 ## Testing
 
+### Acceptance Test: KPI Computation
+
+Run the acceptance test to verify KPI computation features:
+
+```bash
+# Run acceptance test (recommended)
+bash scripts/run_acceptance_test.sh
+
+# Or run the Python script directly
+docker-compose exec api python -c "
+import sys; sys.path.insert(0, '/app');
+exec(open('/app/../scripts/acceptance_test_kpi.py').read())"
+```
+
+The acceptance test verifies:
+- **Delta %**: Percentage change calculation between time windows
+- **Top 10 Contributors**: Identification of top positive/negative contributors
+- **Decomposition**: Price effect vs Volume effect breakdown
+
 ### Test KPI Queries
 
 Run the test script to verify read-only database connection and KPI queries:
