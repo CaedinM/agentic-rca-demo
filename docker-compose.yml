@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: retail_sales
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+      # optional: if you use CSV + COPY in init SQL
+      - ./db/data:/db/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d retail_sales"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  api:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/retail_sales
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./sql:/app/sql
+    depends_on:
+      db:
+        condition: service_healthy
+
+#  streamlit:
+#    build:
+#      context: ./frontend
+#    environment:
+#      API_BASE_URL: http://api:8000
+#    ports:
+#      - "8501:8501"
+#    depends_on:
+#      - api
+
+volumes:
+  pgdata:
