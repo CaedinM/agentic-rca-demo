@@ -86,6 +86,30 @@ python scripts/prepare_seed_data.py \
 - `--keep-missing-customers` - Keep rows with NULL CustomerID
 - `--invoice-no-as-text` - Keep invoice_no as TEXT instead of INT
 
+## Testing
+
+### Test KPI Queries
+
+Run the test script to verify read-only database connection and KPI queries:
+
+```bash
+# Run from Docker container (recommended)
+docker-compose exec api python -c "
+import sys; sys.path.insert(0, '/app');
+exec(open('/app/../scripts/test_kpi_query.py').read())"
+
+# Or run locally (requires DATABASE_URL)
+export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/retail_sales"
+python scripts/test_kpi_query.py
+```
+
+The test script verifies:
+- Database connection
+- Read-only enforcement (blocks INSERT/UPDATE/DELETE)
+- Revenue KPI query
+- Units KPI query
+- Table row counts
+
 ## Development
 
 ### Rebuilding Services
@@ -118,4 +142,3 @@ docker-compose down -v
 - SQL templates are mounted as a volume for easy access
 - The API includes CORS middleware for frontend integration
 - All SQL queries are validated to be read-only for security
-
